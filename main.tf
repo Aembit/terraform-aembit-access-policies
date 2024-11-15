@@ -36,7 +36,7 @@ resource "aembit_trust_provider" "this" {
 resource "aembit_credential_provider" "this" {
   for_each = var.create_credential_providers == true ? var.credential_providers : {}
 
-  name        = "${var.client_workload_name}-${each.key}"
+  name        = each.key
   description = "${var.client_workload_name}-${each.key} ${each.value["type"]} Credential Provider"
   is_active   = try(each.value["is_active"], true)
   tags        = var.tags
