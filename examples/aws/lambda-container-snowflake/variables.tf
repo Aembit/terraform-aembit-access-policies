@@ -67,3 +67,8 @@ variable "aembit_agent_controller_url" {
   type        = string
   description = "FQDN of Aembit Agent Controller."
 }
+
+variable "create_snowflake_user" {
+  type        = bool
+  description = "Boolean indicating if a new Snowflake user should be created."
+}

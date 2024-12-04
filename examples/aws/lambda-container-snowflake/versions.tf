@@ -7,11 +7,15 @@ terraform {
     }
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0"
+      version = ">= 5.0"
     }
     null = {
       source  = "hashicorp/null"
-      version = "~> 3.0"
+      version = ">= 3.0"
+    }
+    snowflake = {
+      source  = "Snowflake-Labs/snowflake"
+      version = ">= 0.99.0"
     }
   }
 }

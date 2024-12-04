@@ -6,7 +6,9 @@ locals {
   name                           = "ex-${basename(path.cwd)}"
   snowflake_host                 = "${var.snowflake_account_id}.snowflakecomputing.com"
   snowflake_server_workload_name = "snowflake-sdk-${var.snowflake_account_id}"
+  rsa_public_key                 = replace(split("=", module.aembit_lambda_container.credential_providers["snowflake"].snowflake_jwt.alter_user_command)[1], "'", "")
 }
+
 
 # Create Aembit Server Workload for the Snowflake SDK
 resource "aembit_server_workload" "snowflake" {
@@ -29,6 +31,7 @@ resource "aembit_server_workload" "snowflake" {
   }
 }
 
+# Create example Lambda function and associated AWS resources
 data "aws_iam_policy_document" "assume_role" {
   statement {
     effect = "Allow"
@@ -108,8 +111,6 @@ resource "aws_lambda_function" "example" {
   timeout     = 60
   memory_size = 256
 
-
-
   vpc_config {
     subnet_ids         = var.subnet_ids
     security_group_ids = [aws_security_group.lambda.id]
@@ -134,6 +135,7 @@ resource "aws_lambda_function" "example" {
   }
 }
 
+# Create Aembit access policy for Lambda function
 module "aembit_lambda_container" {
   depends_on                  = [aembit_server_workload.snowflake]
   source                      = "../../../"
@@ -178,4 +180,23 @@ module "aembit_lambda_container" {
       }
     }
   }
+}
+
+# Create Snowflake user or configure public key for existing user
+resource "snowflake_user" "user" {
+  count        = var.create_snowflake_user ? 1 : 0
+  name         = var.snowflake_username
+  login_name   = var.snowflake_username
+  comment      = "Aembit Snowflake Terraform Example User."
+  disabled     = "false"
+  display_name = var.snowflake_username
+
+  default_warehouse = var.snowflake_warehouse
+  rsa_public_key    = local.rsa_public_key
+}
+
+resource "snowflake_user_public_keys" "user" {
+  count          = var.create_snowflake_user ? 0 : 1
+  name           = var.snowflake_username
+  rsa_public_key = local.rsa_public_key
 }
