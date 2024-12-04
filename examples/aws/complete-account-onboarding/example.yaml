@@ -1,0 +1,49 @@
+aws_account_id: 123456789012
+aembit_tenant_id: abc123
+lambda_workloads:
+  example1:
+    function_name: example1
+    iam_role_name: example1
+    credential_providers:
+      snowflake_example1:
+        is_active: true
+        type: snowflake_jwt
+        account_id: asdfabsd
+        username: example_user
+    access_policies:
+      snowflake:
+        is_active: true
+        server_workload_name: snowflake
+        credential_provider_name: snowflake_example1
+ecs_workloads: 
+  example2:
+    ecs_task_family: example2
+    iam_role_name: example2
+    credential_providers:
+      vault_example2:
+        is_active: true
+        type: vault_client_token
+        subject: example2
+        subject_type: literal
+        vault_host: vault.example.com
+        vault_path: auth/jwt/login
+        vault_port: 443
+        vault_tls: true
+      access_policies:
+        is_active: true
+        server_workload_name: vault
+        credential_provider_name: example2
+ec2_workloads:
+  example3:
+    iam_role_name: example3
+    credential_providers:
+      aembit_example3:
+        is_active: true
+        type: aembit_access_token
+        lifetime: 900
+        role_name: example_role
+    access_policies:
+      aembit:
+        is_active: true
+        server_workload_name: aembit
+        credential_provider_name: aembit_example3
