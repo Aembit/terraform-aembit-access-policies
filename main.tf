@@ -41,17 +41,17 @@ resource "aembit_credential_provider" "this" {
   is_active   = try(each.value["is_active"], true)
   tags        = var.tags
 
-  aembit_access_token      = each.value["type"] == "aembit_access_token" ? each.value["aembit_access_token"] : null
-  api_key                  = each.value["type"] == "api_key" ? each.value["api_key"] : null
-  aws_sts                  = each.value["type"] == "aws_sts" ? each.value["aws_sts"] : null
+  aembit_access_token           = each.value["type"] == "aembit_access_token" ? each.value["aembit_access_token"] : null
+  api_key                       = each.value["type"] == "api_key" ? each.value["api_key"] : null
+  aws_sts                       = each.value["type"] == "aws_sts" ? each.value["aws_sts"] : null
   azure_entra_workload_identity = each.value["type"] == "azure_entra_workload_identity" ? each.value["azure_entra_workload_identity"] : null
-  google_workload_identity = each.value["type"] == "google_workload_identity" ? each.value["google_workload_identity"] : null
-  managed_gitlab_account = each.value["type"] == "managed_gitlab_account" ? each.value["managed_gitlab_account"] : null
-  oauth_authorization_code = each.value["type"] == "oauth_authorization_code" ? each.value["oauth_authorization_code"] : null
-  oauth_client_credentials = each.value["type"] == "oauth_client_credentials" ? each.value["oauth_client_credentials"] : null
-  snowflake_jwt            = each.value["type"] == "snowflake_jwt" ? each.value["snowflake_jwt"] : null
-  username_password        = each.value["type"] == "username_password" ? each.value["username_password"] : null
-  vault_client_token       = each.value["type"] == "vault_client_token" ? each.value["vault_client_token"] : null
+  google_workload_identity      = each.value["type"] == "google_workload_identity" ? each.value["google_workload_identity"] : null
+  managed_gitlab_account        = each.value["type"] == "managed_gitlab_account" ? each.value["managed_gitlab_account"] : null
+  oauth_authorization_code      = each.value["type"] == "oauth_authorization_code" ? each.value["oauth_authorization_code"] : null
+  oauth_client_credentials      = each.value["type"] == "oauth_client_credentials" ? each.value["oauth_client_credentials"] : null
+  snowflake_jwt                 = each.value["type"] == "snowflake_jwt" ? each.value["snowflake_jwt"] : null
+  username_password             = each.value["type"] == "username_password" ? each.value["username_password"] : null
+  vault_client_token            = each.value["type"] == "vault_client_token" ? each.value["vault_client_token"] : null
 }
 
 resource "aembit_access_policy" "this" {

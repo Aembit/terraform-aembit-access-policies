@@ -63,11 +63,11 @@ variable "credential_providers" {
       lifetime = optional(string)
     }), null)
     azure_entra_workload_identity = optional(object({
-      audience = string
+      audience     = string
       azure_tenant = string
-      client_id = string
-      scope = string
-      subject = string
+      client_id    = string
+      scope        = string
+      subject      = string
     }))
     google_workload_identity = optional(object({
       audience        = string
@@ -75,12 +75,12 @@ variable "credential_providers" {
       lifetime        = optional(string)
     }), null)
     managed_gitlab_account = optional(object({
-      access_level = number
+      access_level                       = number
       credential_provider_integration_id = string
-      group_ids = set(string)
-      lifetime_in_days = number
-      project_ids = set(string)
-      scope = string
+      group_ids                          = set(string)
+      lifetime_in_days                   = number
+      project_ids                        = set(string)
+      scope                              = string
     }))
     oauth_authorization_code = optional(object({
       client_id               = string
@@ -110,18 +110,18 @@ variable "credential_providers" {
       username = string
     }), null)
     vault_client_token = optional(object({
-      lifetime         = string
-      subject          = string
-      subject_type     = string
-      vault_host       = string
-      vault_path       = string
-      vault_port       = number
-      vault_tls        = bool
-      custom_claims    = optional(set(map(string)))
-      vault_forwarding = optional(string)
-      vault_namespace  = optional(string)
+      lifetime                     = string
+      subject                      = string
+      subject_type                 = string
+      vault_host                   = string
+      vault_path                   = string
+      vault_port                   = number
+      vault_tls                    = bool
+      custom_claims                = optional(set(map(string)))
+      vault_forwarding             = optional(string)
+      vault_namespace              = optional(string)
       vault_private_network_access = optional(bool)
-      vault_role       = optional(string)
+      vault_role                   = optional(string)
     }), null)
   }))
   # sensitive   = true
@@ -202,55 +202,55 @@ variable "trust_providers" {
     type      = string
     aws_metadata = optional(object({
       account_id                 = optional(string)
-      account_ids = optional(set(string))
+      account_ids                = optional(set(string))
       architectecture            = optional(string)
       availability_zone          = optional(string)
-      availability_zones = optional(set(string))
+      availability_zones         = optional(set(string))
       billing_products           = optional(string)
       certificate                = optional(string)
       image_id                   = optional(string)
       instance_id                = optional(string)
-      instance_ids = optional(set(string))
+      instance_ids               = optional(set(string))
       instance_type              = optional(string)
-      instance_types = optional(set(string))
+      instance_types             = optional(set(string))
       kernel_id                  = optional(string)
       marketplace_products_codes = optional(string)
       pending_time               = optional(string)
       private_ip                 = optional(string)
       ramdisk_id                 = optional(string)
       region                     = optional(string)
-      regions = optional(set(string))
+      regions                    = optional(set(string))
       version                    = optional(string)
     }), null)
     aws_role = optional(object({
-      account_id   = optional(string)
-      account_ids = optional(set(string))
-      assumed_role = optional(string)
+      account_id    = optional(string)
+      account_ids   = optional(set(string))
+      assumed_role  = optional(string)
       assumed_roles = optional(set(string))
-      role_arn     = optional(string)
-      role_arns = optional(set(string))
-      username     = optional(string)
-      usernames = optional(set(string))
+      role_arn      = optional(string)
+      role_arns     = optional(set(string))
+      username      = optional(string)
+      usernames     = optional(set(string))
     }), null)
     azure_metadata = optional(object({
-      sku             = optional(string)
-      skus = optional(set(string))
-      subscription_id = optional(string)
+      sku              = optional(string)
+      skus             = optional(set(string))
+      subscription_id  = optional(string)
       subscription_ids = optional(set(string))
-      vm_id           = optional(string)
-      vm_ids = optional(set(string))
+      vm_id            = optional(string)
+      vm_ids           = optional(set(string))
     }), null)
     gcp_identity = optional(object({
-      email = optional(string)
+      email  = optional(string)
       emails = optional(set(string))
     }), null)
     github_action = optional(object({
-      actor      = optional(string)
-      actors = optional(set(string))
+      actor        = optional(string)
+      actors       = optional(set(string))
       repositories = optional(set(string))
-      repository = optional(string)
-      workflow   = optional(string)
-      workflows = optional(set(string))
+      repository   = optional(string)
+      workflow     = optional(string)
+      workflows    = optional(set(string))
     }), null)
     gitlab_job = optional(object({
       namespace_path  = optional(string)
@@ -266,33 +266,33 @@ variable "trust_providers" {
     kerberos = optional(object({
       agent_controller_ids = set(string)
       principal            = optional(string)
-      principals = optional(set(string))
-      realm_domain                = optional(string)
-      realm_domains = optional(set(string))
+      principals           = optional(set(string))
+      realm_domain         = optional(string)
+      realm_domains        = optional(set(string))
       source_ip            = optional(string)
-      source_ips = optional(set(string))
+      source_ips           = optional(set(string))
     }), null)
     kubernetes_service_account = optional(object({
-      issuer               = optional(string)
-      issuers = optional(set(string))
-      namespace            = optional(string)
-      namespaces = optional(set(string))
-      oidc_endpoint        = optional(string)
-      pod_name             = optional(string)
-      pod_names = optional(set(string))
-      public_key           = optional(string)
-      service_account_name = optional(string)
+      issuer                = optional(string)
+      issuers               = optional(set(string))
+      namespace             = optional(string)
+      namespaces            = optional(set(string))
+      oidc_endpoint         = optional(string)
+      pod_name              = optional(string)
+      pod_names             = optional(set(string))
+      public_key            = optional(string)
+      service_account_name  = optional(string)
       service_account_names = optional(set(string))
-      subject              = optional(string)
-      subjects = optional(set(string))
+      subject               = optional(string)
+      subjects              = optional(set(string))
     }), null)
     terraform_workspace = optional(object({
-      organization_id = optional(string)
+      organization_id  = optional(string)
       organization_ids = optional(set(string))
-      project_id      = optional(string)
-      project_ids = optional(set(string))
-      workspace_id    = optional(string)
-      workspace_ids = optional(set(string))
+      project_id       = optional(string)
+      project_ids      = optional(set(string))
+      workspace_id     = optional(string)
+      workspace_ids    = optional(set(string))
     }), null)
   }))
   description = <<-EOT
