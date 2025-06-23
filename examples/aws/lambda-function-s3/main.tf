@@ -29,30 +29,6 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "lambda" {
-  name              = "/aws/lambda/${local.name}"
-  retention_in_days = 14
-}
-
-resource "aws_iam_role_policy" "allow_layer_access" {
-  name = "lambda-layer-access"
-  role = aws_iam_role.iam_for_lambda.name
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "lambda:GetLayerVersion"
-        ]
-        Effect   = "Allow"
-        Resource = "*"
-      }
-    ]
-  })
-}
-
-
 resource "aws_iam_role_policy_attachment" "vpc" {
   role       = aws_iam_role.iam_for_lambda.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
@@ -63,7 +39,6 @@ resource "aws_iam_role" "iam_for_lambda" {
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
-# Archive Lambda function source code
 data "archive_file" "lambda_zip" {
   type        = "zip"
   source_file = "${path.module}/src/lambda_function.py"
@@ -80,6 +55,11 @@ resource "aws_vpc_security_group_egress_rule" "all_ipv4" {
   security_group_id = aws_security_group.lambda.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1" # semantically equivalent to all ports and protocols
+}
+
+resource "aws_cloudwatch_log_group" "lambda" {
+  name              = "/aws/lambda/${local.name}"
+  retention_in_days = 14
 }
 
 resource "aws_lambda_function" "example" {
@@ -112,6 +92,38 @@ resource "aws_lambda_function" "example" {
     }
   }
 }
+
+
+# Create federated IAM Role for Aembit Credential Provider
+data "aws_iam_policy_document" "federated_trust" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Federated"
+      identifiers = ["arn:aws:iam::${var.aws_account_id}:oidc-provider/${var.aembit_tenant_id}.id.useast2.aembit.io"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${var.aembit_tenant_id}.id.useast2.aembit.io:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+  }
+}
+
+resource "aws_iam_role" "s3_list" {
+  name               = "aembit-lambda-s3-read-example"
+  assume_role_policy = data.aws_iam_policy_document.federated_trust.json
+}
+
+resource "aws_iam_role_policy_attachment" "s3_list" {
+  role       = aws_iam_role.s3_list.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+}
+
 
 # Create Aembit access policy for Lambda function
 module "aembit_lambda_container" {
@@ -157,34 +169,4 @@ module "aembit_lambda_container" {
       }
     }
   }
-}
-
-# Create example Lambda function and associated AWS resources
-data "aws_iam_policy_document" "federated_trust" {
-  statement {
-    effect = "Allow"
-
-    principals {
-      type        = "Federated"
-      identifiers = ["arn:aws:iam::${var.aws_account_id}:oidc-provider/${var.aembit_tenant_id}.id.useast2.aembit.io"]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "f5dc61.id.useast2.aembit.io:aud"
-      values   = ["sts.amazonaws.com"]
-    }
-
-    actions = ["sts:AssumeRoleWithWebIdentity"]
-  }
-}
-
-resource "aws_iam_role" "s3_list" {
-  name               = "aembit-lambda-s3-read-example"
-  assume_role_policy = data.aws_iam_policy_document.federated_trust.json
-}
-
-resource "aws_iam_role_policy_attachment" "s3_list" {
-  role       = aws_iam_role.s3_list.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
 }

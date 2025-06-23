@@ -36,31 +36,27 @@ variable "snowflake_username" {
 variable "snowflake_warehouse" {
   type        = string
   description = "Snowflake warehouse for Lambda function to query."
-  default     = "COMPUTE_WH"
 }
 
 variable "snowflake_database" {
   type        = string
   description = "Snowflake database for Lambda function to query."
-  default     = "SNOWFLAKE_SAMPLE_DATA"
 }
 
 variable "snowflake_schema" {
   type        = string
   description = "Snowflake schema for Lambda function to query."
-  default     = "TPCH_SF1"
 }
 
 variable "snowflake_query" {
   type        = string
   description = "Snowflake query for Lambda function to run."
-  default     = "SELECT \"C_NAME\", \"C_ACCTBAL\" FROM CUSTOMER;"
 }
 
 variable "aembit_agent_log_level" {
   type        = string
   description = "Log level of Aembit agent proxy Lambda extension."
-  default     = "debug"
+  default     = "info"
 }
 
 variable "aembit_agent_controller_url" {
