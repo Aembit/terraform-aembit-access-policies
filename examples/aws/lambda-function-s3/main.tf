@@ -132,7 +132,7 @@ module "aembit_lambda_container" {
   create_client_workload      = true
   create_trust_providers      = true
   create_credential_providers = true
-  client_workload_identities = [
+  client_workload_identifiers = [
     {
       type  = "awsLambdaArn"
       value = aws_lambda_function.example.arn

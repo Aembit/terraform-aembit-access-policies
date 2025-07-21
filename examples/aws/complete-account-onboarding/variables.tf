@@ -32,6 +32,12 @@ variable "vpc_id" {
   default     = ""
 }
 
+variable "vpc_name" {
+  type        = string
+  description = "Name of AWS VPC where Aembit edge components will be deployed.  This is required if `create_vpc = true`"
+  default     = ""
+}
+
 variable "subnet_ids" {
   type        = set(string)
   description = "List of subnet IDs where Aembit edge components will be deployed."
@@ -58,4 +64,9 @@ variable "create_vpc" {
 variable "create_ecs_cluster" {
   type        = bool
   description = "Boolean indicating whether a new ECS cluster should be created.  If this is not provided the `ecs_cluster_id` variable is required."
+}
+
+variable "create_ecs_agent_controller" {
+  type        = bool
+  description = "Boolean indicating whether a new Aembit Agent Controller should be created in ECS."
 }

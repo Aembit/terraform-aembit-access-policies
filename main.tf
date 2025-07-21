@@ -10,7 +10,7 @@ resource "aembit_client_workload" "this" {
   name        = var.client_workload_name
   description = "${var.client_workload_name} Lambda Client Workload"
   is_active   = var.is_active
-  identities  = var.client_workload_identities
+  identities  = var.client_workload_identifiers
   tags        = var.tags
 }
 

@@ -15,7 +15,7 @@ variable "access_policies" {
   EOT
 }
 
-variable "client_workload_identities" {
+variable "client_workload_identifiers" {
   type = set(object({
     type  = string
     value = string
@@ -31,19 +31,19 @@ variable "client_workload_name" {
 
 variable "create_client_workload" {
   type        = bool
-  description = "Boolean indiciating if module should create a new client workload or use an existing one.  If this is `true` the `client_workload_identities variable is required. Defaults to true."
+  description = "Boolean indicating if module should create a new client workload or use an existing one.  If this is `true` the `client_workload_identifiers` variable is required. Defaults to true."
   default     = true
 }
 
 variable "create_credential_providers" {
   type        = bool
-  description = "Boolean indiciating if module should create a new credential provider or use an existing one.  If this is `true` the credential provider configurations will need to be provided. Defaults to true."
+  description = "Boolean indicating if module should create a new credential provider or use an existing one.  If this is `true` the credential provider configurations will need to be provided. Defaults to true."
   default     = true
 }
 
 variable "create_trust_providers" {
   type        = bool
-  description = "Boolean indiciating if module should create a new trust provider or use an existing one.  If this is `true` the trust provider configurations will need to be provided. Defaults to true."
+  description = "Boolean indicating if module should create a new trust provider or use an existing one.  If this is `true` the trust provider configurations will need to be provided. Defaults to true."
   default     = true
 }
 
@@ -143,7 +143,7 @@ variable "credential_providers" {
   EOT
   validation {
     condition     = alltrue([for o in var.credential_providers : contains(["aembit_access_token", "api_key", "aws_sts", "google_workload_identity", "oauth_authorization_code", "oauth_client_credentials", "snowflake_jwt", "username_password", "vault_client_token"], o.type)])
-    error_message = "All types must be one of `aembit_access_token`, `api_key`, `aws_sts`, `google_workload_identity`, `oauth_authorization_code`, `oauth_client_credentials` `snowflake_jwt`, `username_password`, or `vault_client_token`!"
+    error_message = "All types must be one of `aembit_access_token`, `api_key`, `aws_sts`, `google_workload_identity`, `oauth_authorization_code`, `oauth_client_credentials`, `snowflake_jwt`, `username_password`, or `vault_client_token`!"
   }
   validation {
     condition     = alltrue([for o in var.credential_providers : o.type == "aembit_access_token" ? o.aembit_access_token != null : true])
@@ -203,7 +203,7 @@ variable "trust_providers" {
     aws_metadata = optional(object({
       account_id                 = optional(string)
       account_ids                = optional(set(string))
-      architectecture            = optional(string)
+      architecture               = optional(string)
       availability_zone          = optional(string)
       availability_zones         = optional(set(string))
       billing_products           = optional(string)

@@ -9,7 +9,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.14.0"
 
-  name = "my-vpc"
+  name = var.vpc_name
   cidr = "192.168.0.0/16"
 
   azs             = ["us-west-2a"]
@@ -101,7 +101,7 @@ module "lambda_workloads" {
   create_client_workload      = true
   create_trust_providers      = true
   create_credential_providers = each.value["create_credential_providers"]
-  client_workload_identities = [
+  client_workload_identifiers = [
     {
       type  = "awsLambdaArn"
       value = each.value["function_arn"]
@@ -134,7 +134,7 @@ module "ec2_workloads" {
   create_client_workload      = true
   create_trust_providers      = true
   create_credential_providers = each.value["create_credential_providers"]
-  client_workload_identities  = each.value["client_workload_identities"]
+  client_workload_identifiers = each.value["client_workload_identifiers"]
   access_policies             = each.value["access_policies"]
   trust_providers = {
     aws_role = {
@@ -157,7 +157,7 @@ module "ecs_workloads" {
   create_client_workload      = each.value["create_client_workload"]
   create_trust_providers      = each.value["create_trust_providers"]
   create_credential_providers = each.value["create_credential_providers"]
-  client_workload_identities = [
+  client_workload_identifiers = [
     {
       type  = "awsEcsTaskFamily"
       value = each.value["ecs_task_family"]
