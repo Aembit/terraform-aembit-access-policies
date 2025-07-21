@@ -31,19 +31,19 @@ variable "client_workload_name" {
 
 variable "create_client_workload" {
   type        = bool
-  description = "Boolean indicating if module should create a new client workload or use an existing one.  If this is `true` the `client_workload_identifiers` variable is required. Defaults to true."
+  description = "Boolean indicating if module should create a new client workload or use an existing one.  If this is `true`, the `client_workload_identifiers` variable is required. Defaults to true."
   default     = true
 }
 
 variable "create_credential_providers" {
   type        = bool
-  description = "Boolean indicating if module should create a new credential provider or use an existing one.  If this is `true` the credential provider configurations will need to be provided. Defaults to true."
+  description = "Boolean indicating if module should create a new credential provider or use an existing one.  If this is `true`, the credential provider configurations will need to be provided. Defaults to true."
   default     = true
 }
 
 variable "create_trust_providers" {
   type        = bool
-  description = "Boolean indicating if module should create a new trust provider or use an existing one.  If this is `true` the trust provider configurations will need to be provided. Defaults to true."
+  description = "Boolean indicating if module should create a new trust provider or use an existing one.  If this is `true`, the trust provider configurations will need to be provided. Defaults to true."
   default     = true
 }
 
