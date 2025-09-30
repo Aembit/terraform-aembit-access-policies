@@ -78,7 +78,7 @@ variable "credential_providers" {
       access_level                       = number
       credential_provider_integration_id = string
       group_ids                          = set(string)
-      lifetime_in_days                   = number
+      lifetime_in_hours                  = number
       project_ids                        = set(string)
       scope                              = string
     }), null)
