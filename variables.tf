@@ -68,7 +68,7 @@ variable "credential_providers" {
       client_id    = string
       scope        = string
       subject      = string
-    }))
+    }), null)
     google_workload_identity = optional(object({
       audience        = string
       service_account = string
@@ -81,7 +81,7 @@ variable "credential_providers" {
       lifetime_in_days                   = number
       project_ids                        = set(string)
       scope                              = string
-    }))
+    }), null)
     oauth_authorization_code = optional(object({
       client_id               = string
       client_secret           = string
@@ -142,8 +142,8 @@ variable "credential_providers" {
     vault_client_token: Configuration block for [Vault Client Token credential provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/credential_provider#nestedatt--vault_client_token).  This should only be provided if type is `vault_client_token`.
   EOT
   validation {
-    condition     = alltrue([for o in var.credential_providers : contains(["aembit_access_token", "api_key", "aws_sts", "google_workload_identity", "oauth_authorization_code", "oauth_client_credentials", "snowflake_jwt", "username_password", "vault_client_token"], o.type)])
-    error_message = "All types must be one of `aembit_access_token`, `api_key`, `aws_sts`, `google_workload_identity`, `oauth_authorization_code`, `oauth_client_credentials`, `snowflake_jwt`, `username_password`, or `vault_client_token`!"
+    condition     = alltrue([for o in var.credential_providers : contains(["aembit_access_token", "api_key", "aws_sts", "azure_entra_workload_identity", "google_workload_identity", "managed_gitlab_account", "oauth_authorization_code", "oauth_client_credentials", "snowflake_jwt", "username_password", "vault_client_token"], o.type)])
+    error_message = "All types must be one of `aembit_access_token`, `api_key`, `aws_sts`, `azure_entra_workload_identity`, `google_workload_identity`, `managed_gitlab_account`, `oauth_authorization_code`, `oauth_client_credentials`, `snowflake_jwt`, `username_password`, or `vault_client_token`!"
   }
   validation {
     condition     = alltrue([for o in var.credential_providers : o.type == "aembit_access_token" ? o.aembit_access_token != null : true])
@@ -158,8 +158,16 @@ variable "credential_providers" {
     error_message = "`aws_sts` is required if `type` is `aws_sts`"
   }
   validation {
+    condition     = alltrue([for o in var.credential_providers : o.type == "azure_entra_workload_identity" ? o.azure_entra_workload_identity != null : true])
+    error_message = "`azure_entra_workload_identity` is required if `type` is `azure_entra_workload_identity`"
+  }
+  validation {
     condition     = alltrue([for o in var.credential_providers : o.type == "google_workload_identity" ? o.google_workload_identity != null : true])
     error_message = "`google_workload_identity` is required if `type` is `google_workload_identity`"
+  }
+  validation {
+    condition     = alltrue([for o in var.credential_providers : o.type == "managed_gitlab_account" ? o.managed_gitlab_account != null : true])
+    error_message = "`managed_gitlab_account` is required if `type` is `managed_gitlab_account`"
   }
   validation {
     condition     = alltrue([for o in var.credential_providers : o.type == "oauth_authorization_code" ? o.oauth_authorization_code != null : true])
