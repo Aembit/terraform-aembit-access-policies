@@ -200,7 +200,7 @@ module "aembit_ecs_container" {
         oauth_token_url         = "https://${var.salesforce_host}/services/oauth2/token"
         scopes                  = var.salesforce_oauth_scopes
         is_pkce_required        = true
-        oauth_introspection_url = "https://${var.salesforce_host}/services/oauth2/incrospect"
+        oauth_introspection_url = "https://${var.salesforce_host}/services/oauth2/introspect"
       }
     }
   }
