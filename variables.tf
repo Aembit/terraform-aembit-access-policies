@@ -149,7 +149,7 @@ variable "credential_providers" {
       vault_role                   = optional(string)
     }), null)
   }))
-  sensitive   = true
+  # sensitive   = true
   description = <<-EOT
     Map of credential provider configuration objects for this module to create.  If this is not provided, no new credential providers will be added.
 
