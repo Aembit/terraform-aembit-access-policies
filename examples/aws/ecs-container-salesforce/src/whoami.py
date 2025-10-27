@@ -78,10 +78,10 @@ def main():
                      url, resp.status_code, resp.reason, ctype, resp.headers.get("Content-Length", "?"))
 
             # Non-JSON bodies: keep very small to avoid HTML dumps
-            body = (resp.text or "")
-            if body:
-                snippet = body if len(body) <= 400 else body[:400] + "…"
-                print(snippet)
+            # body = (resp.text or "")
+            # if body:
+            #     snippet = body if len(body) <= 400 else body[:400] + "…"
+            #     print(snippet)
 
             # Flush immediately so you see output each cycle
             sys.stdout.flush()
