@@ -82,6 +82,7 @@ def main():
             # if body:
             #     snippet = body if len(body) <= 400 else body[:400] + "…"
             #     print(snippet)
+            print(resp.text)
 
             # Flush immediately so you see output each cycle
             sys.stdout.flush()
