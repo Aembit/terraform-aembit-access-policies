@@ -15,11 +15,6 @@ SOQL = "SELECT Id,Name,Industry,BillingCity,BillingCountry FROM Account LIMIT 10
 INTERVAL_SECONDS = 30
 TIMEOUT_SECONDS = 10
 
-# Pretty-print controls
-PRETTY_JSON = True
-SORT_KEYS = False          # set True if you want keys sorted
-MAX_PRETTY_CHARS = 8000    # cap stdout to avoid massive output; set 0 for unlimited
-
 # --- Logging ------------------------------------------------------------------
 logging.basicConfig(
     level=logging.INFO,
@@ -50,25 +45,6 @@ def is_json_response(resp: requests.Response) -> bool:
         return True
     text = (resp.text or "").lstrip()
     return text.startswith("{") or text.startswith("[")
-
-def pretty_print_json_to_stdout(resp: requests.Response) -> None:
-    try:
-        data = resp.json()
-    except Exception:
-        # Fallback: try to parse manually, else print raw (truncated)
-        try:
-            data = json.loads(resp.text)
-        except Exception:
-            body = resp.text or ""
-            if MAX_PRETTY_CHARS and len(body) > MAX_PRETTY_CHARS:
-                body = body[:MAX_PRETTY_CHARS] + "…"
-            print(body)
-            return
-
-    pretty = json.dumps(data, indent=2, sort_keys=SORT_KEYS, ensure_ascii=False)
-    if MAX_PRETTY_CHARS and len(pretty) > MAX_PRETTY_CHARS:
-        pretty = pretty[:MAX_PRETTY_CHARS] + "…"
-    print(pretty)
 
 # --- Main loop ----------------------------------------------------------------
 def main():
@@ -101,15 +77,11 @@ def main():
             log.info("GET %s -> %s %s (Content-Type: %s, Length: %s)",
                      url, resp.status_code, resp.reason, ctype, resp.headers.get("Content-Length", "?"))
 
-            # --- Pretty output (only if the body is JSON-like)
-            if PRETTY_JSON and is_json_response(resp):
-                pretty_print_json_to_stdout(resp)
-            else:
-                # Non-JSON bodies: keep very small to avoid HTML dumps
-                body = (resp.text or "")
-                if body:
-                    snippet = body if len(body) <= 400 else body[:400] + "…"
-                    print(snippet)
+            # Non-JSON bodies: keep very small to avoid HTML dumps
+            body = (resp.text or "")
+            if body:
+                snippet = body if len(body) <= 400 else body[:400] + "…"
+                print(snippet)
 
             # Flush immediately so you see output each cycle
             sys.stdout.flush()
