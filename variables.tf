@@ -58,6 +58,13 @@ variable "credential_providers" {
     api_key = optional(object({
       api_key = string
     }), null)
+    aws_secrets_manager_value = optional(object({
+      credential_provider_integration_id = string
+      secret_arn                         = string
+      private_network_access             = optional(bool)
+      secret_key_1                       = optional(string)
+      secret_key_2                       = optional(string)
+    }), null)
     aws_sts = optional(object({
       role_arn = string
       lifetime = optional(string)
@@ -74,6 +81,14 @@ variable "credential_providers" {
       service_account = string
       lifetime        = optional(string)
     }), null)
+    jwt_svid_token = optional(object({
+      algorithm_type      = string
+      audience            = string
+      lifetime_in_minutes = number
+      subject             = string
+      subject_type        = string
+      custom_claims       = set(map(string))
+    }), null)
     managed_gitlab_account = optional(object({
       access_level                       = number
       credential_provider_integration_id = string
@@ -81,6 +96,7 @@ variable "credential_providers" {
       lifetime_in_hours                  = number
       project_ids                        = set(string)
       scope                              = string
+      service_account_username           = optional(string)
     }), null)
     oauth_authorization_code = optional(object({
       client_id               = string
@@ -92,6 +108,7 @@ variable "credential_providers" {
       custom_parameters       = optional(set(map(string)))
       is_pkce_required        = optional(bool)
       lifetime                = optional(number)
+      oauth_introspection_url = optional(string)
     }), null)
     oauth_client_credentials = optional(object({
       client_id         = string
@@ -100,6 +117,14 @@ variable "credential_providers" {
       scopes            = string
       token_url         = string
       custom_parameters = optional(set(map(string)))
+    }), null)
+    oidc_id_token = optional(object({
+      algorithm_type      = string
+      audience            = string
+      lifetime_in_minutes = number
+      subject             = string
+      subject_type        = string
+      custom_claims       = optional(set(map(string)))
     }), null)
     snowflake_jwt = optional(object({
       account_id = string
@@ -124,7 +149,7 @@ variable "credential_providers" {
       vault_role                   = optional(string)
     }), null)
   }))
-  # sensitive   = true
+  sensitive   = true
   description = <<-EOT
     Map of credential provider configuration objects for this module to create.  If this is not provided, no new credential providers will be added.
 
@@ -133,19 +158,22 @@ variable "credential_providers" {
     type: Type of credential provider.  Valid values are `aembit_access_token`, `api_key`, `aws_sts`, `snowflake_jwt`, or `username_password`.
     aembit_access_token: Configuration block for [Aembit Access Token credential provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/credential_provider#nestedatt--aembit_access_token).  This should only be provided if type is `aembit_access_token`.
     api_key: Configuration block for [API Key credential provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/credential_provider#nestedatt--api_key).  This should only be provided if type is `api_key`.
+    aws_secret_manager_value: Configuration block for [AWS Secret Manager Value credential provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/credential_provider#nestedatt--aws_secrets_manager_value).  This should only be provided if type is `aws_secrets_manager_value`.
     aws_sts: Configuration block for [AWS STS credential provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/credential_provider#nestedatt--aws_sts).  This should only be provided if type is `aws_sts`.
     azure_entra_workload_identity: Configuration block for [Azure Entra Workload Identity Federation credential provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/credential_provider#nested-schema-for-azure_entra_workload_identity).  This should only be provided if type is `azure_entra_workload_identity`.
     google_workload_identity: Configuration block for [Google Workload Identity credential provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/credential_provider#nestedatt--google_workload_identity).  This should only be provided if type is `google_workload_identity`.
+    jwt_svid_token: Configuration block for [JWT SVID TOKEN credential provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/credential_provider#nested-schema-for-jwt_svid_token).  This should only be provided if type is `jwt_svid_token`.
     managed_gitlab_account: Configuration block for [Managed Gitlab Account credential provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/credential_provider#nested-schema-for-managed_gitlab_account).  This should only be provided if type is `managed_gitlab_account`.
     oauth_authorization_code: Configuration block for [Oauth Authorization Code credential provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/credential_provider#nestedatt--oauth_authorization_code).  This should only be provided if type is `oauth_authorization_code`.
     oauth_client_credentials: Configuration block for [Oauth Client Credentials credential provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/credential_provider#nestedatt--oauth_client_credentials).  This should only be provided if type is `oauth_client_credentials`.
+    oidc_id_token: Configuration block for [OIDC ID TOKEN credential provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/credential_provider#nested-schema-for-oidc_id_token).  This should only be provided if type is `oidc_id_token`.
     snowflake_jwt: Configuration block for [Snowflake JWT credential provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/credential_provider#nestedatt--snowflake_jwt).  This should only be provided if type is `snowflake_jwt`.
     username_password: Configuration block for [Username Password credential provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/credential_provider#nestedatt--username_password).  This should only be provided if type is `username_password`.
     vault_client_token: Configuration block for [Vault Client Token credential provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/credential_provider#nestedatt--vault_client_token).  This should only be provided if type is `vault_client_token`.
   EOT
   validation {
-    condition     = alltrue([for o in var.credential_providers : contains(["aembit_access_token", "api_key", "aws_sts", "azure_entra_workload_identity", "google_workload_identity", "managed_gitlab_account", "oauth_authorization_code", "oauth_client_credentials", "snowflake_jwt", "username_password", "vault_client_token"], o.type)])
-    error_message = "All types must be one of `aembit_access_token`, `api_key`, `aws_sts`, `azure_entra_workload_identity`, `google_workload_identity`, `managed_gitlab_account`, `oauth_authorization_code`, `oauth_client_credentials`, `snowflake_jwt`, `username_password`, or `vault_client_token`!"
+    condition     = alltrue([for o in var.credential_providers : contains(["aembit_access_token", "api_key", "aws_secret_manager_value", "aws_sts", "azure_entra_workload_identity", "google_workload_identity", "jwt_svid_token", "managed_gitlab_account", "oauth_authorization_code", "oauth_client_credentials", "oidc_id_token", "snowflake_jwt", "username_password", "vault_client_token"], o.type)])
+    error_message = "All types must be one of `aembit_access_token`, `api_key`, `aws_secret_manager_value`, `aws_sts`, `azure_entra_workload_identity`, `google_workload_identity`, `jwt_svid_token`, `managed_gitlab_account`, `oauth_authorization_code`, `oauth_client_credentials`, `oidc_id_token`, `snowflake_jwt`, `username_password`, or `vault_client_token`!"
   }
   validation {
     condition     = alltrue([for o in var.credential_providers : o.type == "aembit_access_token" ? o.aembit_access_token != null : true])
@@ -154,6 +182,10 @@ variable "credential_providers" {
   validation {
     condition     = alltrue([for o in var.credential_providers : o.type == "api_key" ? o.api_key != null : true])
     error_message = "`api_key` is required if `type` is `api_key`"
+  }
+  validation {
+    condition     = alltrue([for o in var.credential_providers : o.type == "aws_secret_manager_value" ? o.aws_secret_manager_value != null : true])
+    error_message = "`aws_secret_manager_value` is required if `type` is `aws_secret_manager_value`"
   }
   validation {
     condition     = alltrue([for o in var.credential_providers : o.type == "aws_sts" ? o.aws_sts != null : true])
@@ -168,6 +200,10 @@ variable "credential_providers" {
     error_message = "`google_workload_identity` is required if `type` is `google_workload_identity`"
   }
   validation {
+    condition     = alltrue([for o in var.credential_providers : o.type == "jwt_svid_token" ? o.jwt_svid_token != null : true])
+    error_message = "`jwt_svid_token` is required if `type` is `jwt_svid_token`"
+  }
+  validation {
     condition     = alltrue([for o in var.credential_providers : o.type == "managed_gitlab_account" ? o.managed_gitlab_account != null : true])
     error_message = "`managed_gitlab_account` is required if `type` is `managed_gitlab_account`"
   }
@@ -178,6 +214,10 @@ variable "credential_providers" {
   validation {
     condition     = alltrue([for o in var.credential_providers : o.type == "oauth_client_credentials" ? o.oauth_client_credentials != null : true])
     error_message = "`oauth_client_credentials` is required if `type` is `oauth_client_credentials`"
+  }
+  validation {
+    condition     = alltrue([for o in var.credential_providers : o.type == "oidc_id_token" ? o.oidc_id_token != null : true])
+    error_message = "`oidc_id_token` is required if `type` is `oidc_id_token`"
   }
   validation {
     condition     = alltrue([for o in var.credential_providers : o.type == "snowflake_jwt" ? o.snowflake_jwt != null : true])
@@ -295,6 +335,19 @@ variable "trust_providers" {
       service_account_names = optional(set(string))
       subject               = optional(string)
       subjects              = optional(set(string))
+      symmetric_key         = optional(string)
+    }), null)
+    oidc_id_token = optional(object({
+      audience      = optional(string)
+      audiences     = optional(set(string))
+      issuer        = optional(string)
+      issuers       = optional(set(string))
+      jwks          = optional(string)
+      oidc_endpoint = optional(string)
+      public_key    = optional(string)
+      subject       = optional(string)
+      subjects      = optional(set(string))
+      symmetric_key = optional(string)
     }), null)
     terraform_workspace = optional(object({
       organization_id  = optional(string)
@@ -319,10 +372,11 @@ variable "trust_providers" {
     gitlab_job: Configuration block for [Gitlab Job trust provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/trust_provider#gitlab_job-1).  This should only be provided if type is `gitlab_job`.
     kerberos: Configuration block for [Kerberos trust provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/trust_provider#nestedatt--kerberos).  This should only be provided if type is `kerberos`.
     kubernetes_service_account: Configuration block for [Kubernetes Service Account trust provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/trust_provider#nestedatt--kubernetes_service_account).  This should only be provided if type is `kubernetes_service_account`.
+    oidc_id_token: Configuration block for [Kubernetes Service Account trust provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/trust_provider#nested-schema-for-oidc_id_token).  This should only be provided if type is `oidc_id_token`.
     terraform_workspace: Configuration block for [Terraform Workspace trust provider](https://registry.terraform.io/providers/Aembit/aembit/latest/docs/resources/trust_provider#nestedatt--terraform_workspace).  This should only be provided if type is `terraform_workspace`.
   EOT
   validation {
-    condition     = alltrue([for o in var.trust_providers : contains(["aws_metadata", "aws_role", "azure_metadata", "gcp_identity", "github_action", "gitlab_job", "kerberos", "kubernetes_service_account", "terraform_workspace"], o.type)])
+    condition     = alltrue([for o in var.trust_providers : contains(["aws_metadata", "aws_role", "azure_metadata", "gcp_identity", "github_action", "gitlab_job", "kerberos", "kubernetes_service_account", "oidc_id_token", "terraform_workspace"], o.type)])
     error_message = "All types must be one of `aws_metadata`, `aws_role`, `azure_metadata`, `gcp_identity`, `github_action`, `gitlab_job`, `kerberos`, `kubernetes_service_account`, `terraform_workspace`!"
   }
   validation {
@@ -356,6 +410,10 @@ variable "trust_providers" {
   validation {
     condition     = alltrue([for o in var.trust_providers : o.type == "kubernetes_service_account" ? o.kubernetes_service_account != null : true])
     error_message = "`kubernetes_service_account` is required if `type` is `kubernetes_service_account`"
+  }
+  validation {
+    condition     = alltrue([for o in var.trust_providers : o.type == "oidc_id_token" ? o.oidc_id_token != null : true])
+    error_message = "`oidc_id_token` is required if `type` is `oidc_id_token`"
   }
   validation {
     condition     = alltrue([for o in var.trust_providers : o.type == "terraform_workspace" ? o.terraform_workspace != null : true])
