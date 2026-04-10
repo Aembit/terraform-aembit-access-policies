@@ -1,4 +1,4 @@
-data "aembit_access_conditions" "this" {}
+# data "aembit_access_conditions" "this" {}
 data "aembit_client_workloads" "this" {}
 data "aembit_trust_providers" "this" {}
 data "aembit_credential_providers" "this" {}
@@ -57,10 +57,10 @@ resource "aembit_credential_provider" "this" {
 resource "aembit_access_policy" "this" {
   for_each = var.access_policies
 
-  name                = "${var.client_workload_name}-${each.key}"
-  client_workload     = try(aembit_client_workload.this[0].id, compact([for v in data.aembit_client_workloads.this.client_workloads : v["name"] == var.client_workload_name ? v["id"] : ""])[0])
-  trust_providers     = try([for v in aembit_trust_provider.this : v["id"]], compact([for v in data.aembit_trust_providers.this.trust_providers : v["name"] == var.trust_provider_name ? v["id"] : ""])[0])
-  access_conditions   = try(compact([for v in data.aembit_access_conditions.this.access_conditions : contains(each.value["access_condition_names"], v["name"]) ? v["id"] : ""]), [])
+  name            = "${var.client_workload_name}-${each.key}"
+  client_workload = try(aembit_client_workload.this[0].id, compact([for v in data.aembit_client_workloads.this.client_workloads : v["name"] == var.client_workload_name ? v["id"] : ""])[0])
+  trust_providers = try([for v in aembit_trust_provider.this : v["id"]], compact([for v in data.aembit_trust_providers.this.trust_providers : v["name"] == var.trust_provider_name ? v["id"] : ""])[0])
+  # access_conditions   = try(compact([for v in data.aembit_access_conditions.this.access_conditions : contains(each.value["access_condition_names"], v["name"]) ? v["id"] : ""]), [])
   credential_provider = try(aembit_credential_provider.this[each.value["credential_provider_name"]].id, compact([for v in data.aembit_credential_providers.this.credential_providers : v["name"] == each.value["credential_provider_name"] ? v["id"] : ""])[0])
   server_workload     = try(each.value["server_workload_id"], compact([for v in data.aembit_server_workloads.this.server_workloads : v["name"] == each.value["server_workload_name"] ? v["id"] : ""])[0])
   is_active           = try(each.value["is_active"], true)
