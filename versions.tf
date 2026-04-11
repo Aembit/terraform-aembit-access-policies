@@ -3,7 +3,7 @@ terraform {
   required_providers {
     aembit = {
       source  = "aembit/aembit"
-      version = ">= 1.25.0"
+      version = ">= 1.28.0"
     }
   }
 }

@@ -39,6 +39,6 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-# Mac Detrtius
+# Mac Detritus
 .DS_Store
 *.zip
